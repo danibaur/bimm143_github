@@ -1,0 +1,234 @@
+---
+title: "Class 7: Machine Learning 1"
+author: Dani Baur (A16648266)
+format: html
+---
+
+Today we will start our multi-part exploration of some key machine learning methods. We will begin with clustering- finding groupings in data and then dimensionality reduction.
+
+## Clusting
+
+Let's start with "k-means" clustering. The main function in base R for this `k(means)`.
+```{r}
+#make up some data
+hist(rnorm(100000, mean=3))
+```
+
+```{r}
+tmp <- c(rnorm(30, -3), rnorm(30,+3))
+x <- cbind(x=tmp, y=rev(tmp))
+plot(x)
+```
+
+Now let's try out `k(means)`.
+```{r}
+km <- kmeans(x, centers=2)
+km
+```
+
+```{r}
+attributes(km)
+```
+
+Q. how many points in each cluster?
+```{r}
+km$size
+```
+
+Q. what component of your result object details cluster assignment/membership?
+```{r}
+km$cluster
+```
+
+Q. what are centers/means values of each cluster?
+```{r}
+km$centers
+```
+
+Q. make a plot of your data showing your clustering results.
+```{r}
+plot(x, col=c("red", "blue"))
+```
+
+```{r}
+c(1:5) + c(100,1)
+```
+
+```{r}
+plot(x, col=km$cluster)
+points(km$centers, col="green", pch=15, cex=3)
+```
+
+Q. run `k(means)` again and cluster in 4 groups and plot the results.
+```{r}
+km4 <- kmeans(x, centers=4)
+plot(x, col=km4$cluster)
+```
+
+## Hierarchical Clustering
+
+This form of clustering aims to reveal the structure in your data by progressively grouping points into a even smaller number of clusters.
+
+The main function in base R for this called `hclust()`. This function does not take our input data directly but wants a "distance matrix" that details how (dis)similar all our input points are to each other. 
+
+```{r}
+hc <- hclust(dist(x))
+hc
+```
+The print out above is not very useful (unlink that from kmeans) but there is a useful `plot()` method.
+
+```{r}
+plot(hc)
+abline(h=10, col="red")
+```
+To get my main result (my cluster membership vector), I need to "cut" my tree using the function `cutree()`.
+
+```{r}
+grps <- cutree(hc, h=10)
+grps
+```
+```{r}
+plot(x,col=grps)
+```
+## Lab 7: PCA
+
+The goal of PCA is to reduce the dimensionality of a dataset down to some smaller subset of new variables (called PCs) that are useful bases for further analysis, like visualization, clustering, etc.
+
+```{r}
+url <- "https://tinyurl.com/UK-foods"
+x <- read.csv(url)
+```
+
+**Q1.** How many rows and columns are in your new data frame named x? What R functions could you use to answer this questions?
+```{r}
+dim(x)
+```
+→ There are 17 rows and 5 columns in data frame x.
+
+```{r}
+# checking the data
+head(x)
+```
+```{r}
+# don't want food types to be its own column
+rownames(x) <- x[,1]
+x <- x[,-1]
+head(x)
+```
+```{r}
+# checking to see if change applied to column number
+dim(x)
+```
+**Q2.** Which approach to solving the ‘row-names problem’ mentioned above do you prefer and why? Is one approach more robust than another under certain circumstances?
+
+```{r}
+x <- read.csv(url, row.names=1)
+```
+
+→ The second method shown above is more efficient and concise but it assumes that the data is listed in a way that could be presented better. The first method allows you to see the data first then make adjustments as you see fit.
+
+```{r}
+# spotting differences and trends
+barplot(as.matrix(x), beside=T, col=rainbow(nrow(x)))
+```
+**Q3.** Changing what optional argument in the above barplot() function results in the following plot?
+
+```{r}
+barplot(as.matrix(x), beside=F, col=rainbow(nrow(x)))
+```
+→ Changing beside=TRUE to beside=FALSE changes the result of the graph.
+
+The so-called "pairs" plot can be useful for small datasets:
+```{r}
+rainbow(nrow(x))
+#pairs(x,col=rainbow(nrow(x)))
+pairs(x, col=rainbow(10), pch=16)
+```
+
+So the pairs plot is useful for small datasets but it can be lots of work to interpret and gets untractable for larger datasets.
+
+So PCA to the rescue...
+
+The main function to do PCA in base R is called `prcomp()`. This function wants the transpose of our data in this case.
+
+```{r}
+pca <- prcomp(t(x))
+summary(pca)
+```
+```{r}
+attributes(pca)
+```
+
+```{r}
+pca$x
+```
+
+A major PCA result viz is called a "PCA plot" (aka a score plot, a bi-plot, PC1 vs. PC2 plot, ordientation plot)
+
+```{r}
+plot(pca$x[,1],pca$x[,2])
+```
+```{r}
+mycols <- c("orange","red","blue","darkgreen")
+plot(pca$x[,1],pca$x[,2], col=mycols, pch=16, xlab="PC1", ylab="PC2")
+abline(h=0, col="gray")
+abline(v=0, col="gray")
+```
+Another important output from PCA is called the "loadings" vector or the "rotation" component- this tell us how much the original variables (the foods in this case) contribute to the new PCs.
+
+```{r}
+pca$rotation
+```
+
+PCA looks to be a super useful method for gaining some insight into high dimensional data that is difficult to examine in other ways.
+
+# PCA of RNAseq data
+
+##Data Input
+```{r}
+url2 <- "https://tinyurl.com/expression-CSV"
+rna.data <- read.csv(url2, row.names=1)
+head(rna.data)
+```
+**Q.** How many genes in this dataset?
+```{r}
+nrow(rna.data)
+```
+
+## Again we have to take the transpose of our data 
+```{r}
+pca <- prcomp(t(rna.data), scale=TRUE)
+```
+
+```{r}
+summary(pca)
+```
+
+```{r}
+attributes(pca)
+```
+```{r}
+pca$x
+```
+
+I will make a main result figure using ggplot:
+
+```{r}
+library(ggplot2)
+```
+
+```{r}
+res <- as.data.frame(pca$x)
+head(res)
+```
+
+```{r}
+mycols <- c(rep("blue",5), rep("red",5))
+```
+
+```{r}
+ggplot(res) +
+  aes(x=PC1, y=PC2) +
+  geom_point(col=mycols)
+```
+
