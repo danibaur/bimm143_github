@@ -9,4 +9,4 @@ My classwork for BIMM 143 at UC San Diego
 - **Class 10**:
 - **Class 11**: [Population Scale Analysis](https://github.com/danibaur/bimm143_github/blob/main/class11/class11.md)
 - **Class 13**: [RNASeq Analysis](https://github.com/danibaur/bimm143_github/blob/main/class13/class13.md)
-- **Class 14**:
+- **Class 14**: [Pathway Analysis from RNASeq Results](https://github.com/danibaur/bimm143_github/blob/main/class14/class14.md)
