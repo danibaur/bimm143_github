@@ -1,0 +1,61 @@
+---
+title: "class11pca"
+format: html
+---
+
+```{r}
+library(bio3d)
+aa <- get.seq("1ake_A")
+aa
+```
+
+```{r}
+hits <- NULL
+hits$pdb.id <- c('1AKE_A','6S36_A','6RZE_A','3HPR_A','1E4V_A','5EJE_A','1E4Y_A','3X2S_A','6HAP_A','6HAM_A','4K46_A','3GMT_A','4PZL_A')
+```
+
+```{r}
+files <- get.pdb(hits$pdb.id, path="pdbs", split=TRUE, gzip=TRUE)
+```
+
+```{r}
+pdbs <- pdbaln(files, fit = TRUE, exefile="msa")
+pc.xray <- pca(pdbs)
+plot(pc.xray)
+```
+
+```{r}
+rd <- rmsd(pdbs)
+
+# Structure-based clustering
+hc.rd <- hclust(dist(rd))
+grps.rd <- cutree(hc.rd, k=3)
+
+plot(pc.xray, 1:2, col="grey50", bg=grps.rd, pch=21, cex=1)
+```
+```{r}
+ids <- basename.pdb(pdbs$id)
+```
+```{r}
+pc1 <- mktrj(pc.xray, pc=1, file="pc_1.pdb")
+```
+
+
+```{r}
+library(ggplot2)
+library(ggrepel)
+
+df <- data.frame(PC1=pc.xray$z[,1], 
+                 PC2=pc.xray$z[,2], 
+                 col=as.factor(grps.rd),
+                 ids=ids)
+
+p <- ggplot(df) + 
+  aes(PC1, PC2, col=col, label=ids) +
+  geom_point(size=2) +
+  geom_text_repel(max.overlaps = 20) +
+  theme(legend.position = "none")
+p
+```
+
+
