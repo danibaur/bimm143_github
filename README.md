@@ -7,6 +7,6 @@ My classwork for BIMM 143 at UC San Diego
 - **Class 8**: [Breast Cancer Mini Project](https://github.com/danibaur/bimm143_github/blob/main/class08/class08.md)
 - **Class 9**:
 - **Class 10**:
-- **Class 11**:
+- **Class 11**: [Population Scale Analysis](https://github.com/danibaur/bimm143_github/blob/main/class11/class11.md)
 - **Class 12**:
 - **Class 13**:
