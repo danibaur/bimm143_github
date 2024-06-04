@@ -1,0 +1,9 @@
+This is just a nano (simple) text editor:
+
+cd: change directory
+pwd: print working directory
+ls: list files
+mkdir: make new directories
+
+ssh -i "~/Downloads/bimm143_dani.pem" ubuntu@ec2-35-91-142-169.us-west-2.compute.amazonaws.com
+

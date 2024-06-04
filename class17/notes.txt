@@ -1,0 +1,2 @@
+ssh -i "~/Downloads/bimm143_dani.pem" ubuntu@ec2-18-237-194-18.us-west-2.compute.amazonaws.com
+
