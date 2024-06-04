@@ -252,7 +252,7 @@ p + geom_text_repel(size=3.3, col=my_cols, max.overlaps = 7)  +
 
 ```{r}
 library(plotly)
-ggplotly(p)
+##ggplotly(p)
 ```
 
 How do the original variables contribute to our PCs? For this we look at the loading component of our results object- i.e. the `pca$rotation` object.
